@@ -1,13 +1,16 @@
 from django.shortcuts import render
 from churchApp.models import DevotionalVerse,VerseOfTheDay
-import ntplib
+#import ntplib
+from datetime import date
 import random
 from time import ctime
 # Create your views here.
 def index(request):
-    c=ntplib.NTPClient()
-    response=c.request('asia.pool.ntp.org',version=3)
-    currDate=ctime(response.tx_time)[4:10]
+    #c=ntplib.NTPClient()
+    #response=c.request('asia.pool.ntp.org',version=3)
+    #currDate=ctime(response.tx_time)[4:10]
+    today=date.today()
+    currDate=today.strftime("%b %d")
     currVerse=VerseOfTheDay.objects.first()
     #print('DEBUG: Passed get VOTD')
     if currVerse.date != currDate:
