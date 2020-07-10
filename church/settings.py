@@ -25,7 +25,7 @@ SECRET_KEY = '8aq!p=xz021b@fl-mm(mvpp79qz53vy+#*y3dub=mf3lk339z$'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['church-of-the-redeemer.herokuapp.com']
 
 
 # Application definition
