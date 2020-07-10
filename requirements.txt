@@ -1,2 +1,7 @@
 django
 ntplib
+gunicorn
+dj-database-url
+psycopg2
+pytz
+whitenoise
