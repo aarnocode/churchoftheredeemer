@@ -5,26 +5,54 @@ from datetime import date
 import random
 from time import ctime
 # Create your views here.
+DEBUG_MODE=True
+
+def DEBUG(message):
+    if DEBUG_MODE==True:
+        print("DEBUG: "+message)
+
 def index(request):
     #c=ntplib.NTPClient()
     #response=c.request('asia.pool.ntp.org',version=3)
     #currDate=ctime(response.tx_time)[4:10]
+    # today=date.today()
+    # currDate=today.strftime("%b %d")
+    # currVerse=VerseOfTheDay.objects.first()
+    # DEBUG(str(currVerse))
+    # DEBUG('Passed get VOTD')
+    # if currVerse.date != currDate:
+    #     DEBUG('Entered Condition')
+    #     VerseOfTheDay.objects.all().delete()
+    #     DEBUG('Deleted VOTD')
+    #     count=DevotionalVerse.objects.all().count()
+    #     DEBUG('Get count of all DevVer '+str(count))
+    #     verse=DevotionalVerse.objects.get(pk=random.randrange(1,count+1))
+    #     print(verse.content)
+    #     DEBUG('Get random verse from pool')
+    #     insert=VerseOfTheDay.objects.get_or_create(verse=verse.content,BCV=verse.BCV,date=currDate)
+    #     DEBUG('Inserted chosen verse')
+    # currVerse=VerseOfTheDay.objects.first()
+
     today=date.today()
     currDate=today.strftime("%b %d")
     currVerse=VerseOfTheDay.objects.first()
-    #print('DEBUG: Passed get VOTD')
+    DEBUG(str(currVerse))
+    DEBUG('Passed get VOTD')
+
     if currVerse.date != currDate:
-        #print('DEBUG: Entered Condition')
-        VerseOfTheDay.objects.all().delete()
-        #print('DEBUG: Deleted VOTD')
         count=DevotionalVerse.objects.all().count()
-        #print('DEBUG: Get count of all DevVer '+str(count))
+        DEBUG('Got count of all DevVer '+str(count))
         verse=DevotionalVerse.objects.get(pk=random.randrange(1,count+1))
-        print(verse.content)
-        #print('DEBUG: Get random verse from pool')
+        while(str(currVerse)==verse.BCV):
+            DEBUG("VOTD Repeated")
+            verse=DevotionalVerse.objects.get(pk=random.randrange(1,count+1))
+        DEBUG(verse.BCV+" "+verse.content)
+        VerseOfTheDay.objects.all().delete()
+        DEBUG("Deleted VOTD")
         insert=VerseOfTheDay.objects.get_or_create(verse=verse.content,BCV=verse.BCV,date=currDate)
-        #print('DEBUG: Inserted chosen verse')
+        DEBUG("Inserted Chosen Verse")
     currVerse=VerseOfTheDay.objects.first()
+
     index_dict={
     'verseoftheday':currVerse.verse,
     'BCV':currVerse.BCV
