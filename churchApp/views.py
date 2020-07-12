@@ -64,7 +64,7 @@ def pastora_corner(request,urlId=0):
         sermonList=Sermon.objects.all().order_by('-date')
         latestSermon=sermonList.first()
         sermonDate=latestSermon.date
-        sermonDate=sermonDate.strftime("%B %d %y")
+        sermonDate=sermonDate.strftime("%B %d %Y")
         sermonContent=latestSermon.serviceSermon
     pastora_corner_dict={
     'date':sermonDate,
@@ -83,7 +83,7 @@ def sermon_list(request):
 def sermon_list_prev(request,urlId):
     previousSermon=Sermon.objects.get(pk=int(urlId))
     sermonDate=previousSermon.date
-    sermonDate=sermonDate.strftime("%B %d %y")
+    sermonDate=sermonDate.strftime("%B %d %Y")
     sermonContent=previousSermon.serviceSermon
     prev_sermon_dict={
     'date':sermonDate,
