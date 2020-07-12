@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from churchApp.models import DevotionalVerse,VerseOfTheDay
+from churchApp.models import DevotionalVerse,VerseOfTheDay,Sermon
 #import ntplib
 from datetime import date
 import random
@@ -59,6 +59,37 @@ def index(request):
     }
     return render(request,'churchApp/index.html',context=index_dict)
 
+def pastora_corner(request,urlId=0):
+    if urlId==0:
+        sermonList=Sermon.objects.all().order_by('-date')
+        latestSermon=sermonList.first()
+        sermonDate=latestSermon.date
+        sermonDate=sermonDate.strftime("%B %d %y")
+        sermonContent=latestSermon.serviceSermon
+    pastora_corner_dict={
+    'date':sermonDate,
+    'sermon':sermonContent
+    }
+    return render(request,'churchApp/pastora\'sCorner.html',context=pastora_corner_dict)
+
+def sermon_list(request):
+    sermoncount=Sermon.objects.all().count()
+    list_dict={
+    'count':sermoncount,
+    'sermonList':Sermon.objects.all().order_by('-date')
+    }
+    return render(request,'churchApp/sermonList.html',context=list_dict)
+
+def sermon_list_prev(request,urlId):
+    previousSermon=Sermon.objects.get(pk=int(urlId))
+    sermonDate=previousSermon.date
+    sermonDate=sermonDate.strftime("%B %d %y")
+    sermonContent=previousSermon.serviceSermon
+    prev_sermon_dict={
+    'date':sermonDate,
+    'sermon':sermonContent
+    }
+    return render(request,'churchApp/sermonListPrev.html',context=prev_sermon_dict)
 
 def about(request):
     about='<strong>Something about the church here</strong> Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'

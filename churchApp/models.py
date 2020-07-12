@@ -15,3 +15,10 @@ class VerseOfTheDay(models.Model):
 
     def __str__(self):
         return self.BCV
+
+class Sermon(models.Model):
+    date=models.DateField(unique=True)
+    serviceSermon=models.TextField()
+
+    def __str__(self):
+        return str(self.date)

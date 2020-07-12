@@ -19,5 +19,8 @@ from churchApp import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',views.index,name='index'),
-    path('about/',views.about,name='about')
+    path('about/',views.about,name='about'),
+    path('pastoraCorner/',views.pastora_corner,name='pastora_corner'),
+    path('pastoraCorner/list',views.sermon_list,name='sermon_list'),
+    path('pastoraCorner/list/(?P<urlId>\d+)',views.sermon_list_prev,name='sermon_list_prev')
 ]
