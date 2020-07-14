@@ -55,7 +55,7 @@
 
       {% if sermonList  %}
       <div class="container">
-        <div class="list-group-flush rounded">
+        <div class="list-group-flush rounded" style='font-size:1.125em'>
           {% for entry in sermonList %}
           <a href="{% url 'sermon_list_prev' urlId=entry.pk %}" class="list-group-item list-group-item-action">
             <strong>{{entry.date}}</strong><span> - </span>{{entry.serviceSermon|truncatechars:300}}
