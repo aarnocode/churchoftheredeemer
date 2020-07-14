@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path
 from churchApp import views
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('contentcontrol/', admin.site.urls),
     path('',views.index,name='index'),
     path('about/',views.about,name='about'),
     path('pastoraCorner/',views.pastora_corner,name='pastora_corner'),

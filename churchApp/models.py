@@ -22,3 +22,9 @@ class Sermon(models.Model):
 
     def __str__(self):
         return str(self.date)
+
+class Announcement(models.Model):
+    announcement=models.CharField(max_length=900, unique=True)
+
+    def __str__(self):
+        return self.announcement

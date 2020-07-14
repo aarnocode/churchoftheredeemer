@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from churchApp.models import DevotionalVerse,VerseOfTheDay,Sermon
+from churchApp.models import DevotionalVerse,VerseOfTheDay,Sermon,Announcement
 #import ntplib
 from datetime import date
 import random
@@ -55,8 +55,15 @@ def index(request):
 
     index_dict={
     'verseoftheday':currVerse.verse,
-    'BCV':currVerse.BCV
+    'BCV':currVerse.BCV,
+    'announcement':Announcement.objects.all()
     }
+
+    countAnnouncement=Announcement.objects.all().count()
+    if countAnnouncement == 0:
+        DEBUG('Entered no announcement')
+        index_dict['announcement']='No announcements'
+
     return render(request,'churchApp/index.html',context=index_dict)
 
 def pastora_corner(request,urlId=0):
