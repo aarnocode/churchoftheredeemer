@@ -112,10 +112,13 @@
             <div id='latestSermon' v-if='feedLatestSermon'>
               <!-- CONTENT -->
               <h3 style='font-family:Playfair Display, serif;margin-left:5%'>
-                {{date}}
+                <!-- {{date}} -->
+                [[ sermons[sermonId].date ]]
+
               </h3>
               <div class="container" style='font-size:1.250em'>
-                <p>{{sermon|safe|linebreaks}}</p>
+                <!-- <p>{{sermon|safe|linebreaks}}</p> -->
+                <p style='white-space:pre-line'>[[ sermons[sermonId].serviceSermon ]]</p>
               </div>
               <!-- CONTENT -->
 
@@ -123,6 +126,7 @@
                 <a @click='previousSermonClick'>
                   <h3 align='center' style='font-family:Playfair Display, serif'>
                     View Previous Sermons
+
                   </h3>
                 </a>
               </div>
@@ -135,7 +139,8 @@
               <div class="container">
                 <div class="list-group-flush rounded" style='font-size:1.125em'>
                   {% for entry in sermonList %}
-                  <a href="{% url 'sermon_list_prev' urlId=entry.pk %}" class="list-group-item list-group-item-action">
+
+                  <a @click=getSermon({{entry.pk}}) class="list-group-item list-group-item-action">
                     <strong>{{entry.date}}</strong><span> - </span>{{entry.serviceSermon|truncatechars:300}}
                   </a>
                   {% endfor %}
@@ -168,16 +173,19 @@
                 </p>
               </div>
             </div>
+          </div>
+          <div class="row">
             <!-- contianer -->
-            <div class="col-6 pt-4 pb-4 mivision" style="padding-left:7%">
+            <div class="col-6 pt-4 pb-4 mivision" style="padding-left:7%;width:50%">
               <h3>Mission</h3>
               <p align='justify' style='color:#fbe8d3'>{{mission}}</p>
             </div>
-            <div class="col-6 pt-4 pb-4 mivision" style='padding-right:7%'>
+            <div class="col-6 pt-4 pb-4 mivision" style='padding-right:7%;width:50%'>
               <h3>Vision</h3>
               <p align='justify' style='color:#fbe8d3'>{{vision}}</p>
             </div>
           </div>
+
         </div>
       </transition>
       <!-- ////////////////////////////////////////////// -->
@@ -190,6 +198,7 @@
 
     <!-- development version, includes helpful console warnings -->
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.1"></script>
     <script>
       var app=new Vue({
         el:'#mobileApp',
@@ -201,6 +210,13 @@
           feedLatestSermon:false,
           feedPreviousSermon:false,
           message:'message check',
+          loading:false,
+          sermons:[],
+          currentSermon:[],
+          sermonId:0,
+        },
+        mounted:function(){
+          this.getSermons();
         },
         methods:{
           homeClick:function(){
@@ -216,6 +232,7 @@
             this.feedLatestSermon=true;
             this.feedPreviousSermon=false;
             this.feedAbout=false;
+            this.sermonId=0;
           },
           previousSermonClick:function(){
             this.feedHome=false;
@@ -231,9 +248,58 @@
             this.feedPreviousSermon=false;
             this.feedAbout=true;
             this.message='about clicked'
+          },
+          getSermons:function(){
+            this.loading=true;
+            this.$http.get('/api/sermon/')
+              .then((response)=>{
+                this.sermons=response.data.reverse();
+                this.loading=false;
+                this.sermonId=sermons.length-1;
+                console.log(sermons.length-1)
+                console.log('success')
+              })
+              .catch((err)=>{
+                this.loading=false;
+                console.log(err);
+              })
+
+          },
+          getSermon:function(id){
+            id=this.sermons.findIndex(x => x.id == id)
+            console.log(id)
+            this.loading=true;
+            this.$http.get('/api/sermon/'+id+'/')
+              .then((response)=>{
+                this.currentSermon=response.data;
+                this.loading=false;
+              })
+              .catch((err)=>{
+                this.loading=false;
+                console.log(err);
+              })
+            this.sermonId=id;
+            this.feedHome=false;
+            this.feedPastorCorner=true;
+            this.feedLatestSermon=true;
+            this.feedPreviousSermon=false;
+            this.feedAbout=false;
           }
         }
       })
+    </script>
+
+    <!-- SCRIPT CLOSING WHEN CLICKED OUTSIDE -->
+    <script>
+      $(document).ready(function () {
+          $(document).click(function (event) {
+              var click = $(event.target);
+              var _open = $(".navbar-collapse").hasClass("show");
+              if (_open === true && !click.hasClass("navbar-toggler")) {
+                  $(".navbar-toggler").click();
+              }
+          });
+      });
     </script>
 
   </body>

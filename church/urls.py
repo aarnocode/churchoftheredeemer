@@ -14,8 +14,9 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path,include
 from churchApp import views
+from .routers import router
 urlpatterns = [
     path('contentcontrol/', admin.site.urls),
     path('',views.index,name='index'),
@@ -25,4 +26,5 @@ urlpatterns = [
     path('pastoraCorner/list/(?P<urlId>\d+)',views.sermon_list_prev,name='sermon_list_prev'),
     path('app/',views.SPA,name='SPA'),
     path('mapp/',views.mobileSPA,name='mobileSPA'),
+    path('api/',include(router.urls))
 ]
