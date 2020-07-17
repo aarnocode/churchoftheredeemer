@@ -6,16 +6,16 @@ from datetime import date
 import random
 import time,os,platform
 # Create your views here.
-DEBUG_MODE=True
+DEBUG_MODE=False
 
 def DEBUG(message):
     if DEBUG_MODE==True:
         print("DEBUG: "+message)
 
 def index(request):
-    c=ntplib.NTPClient()
-    response=c.request('asia.pool.ntp.org',version=3)
-    currDate=ctime(response.tx_time)[4:10]
+    os.environ["TZ"]="Asia/Manila"
+    if platform.system() != 'Windows':
+        time.tzset()
     today=date.today()
     currDate=today.strftime("%b %d")
     currVerse=VerseOfTheDay.objects.first()
