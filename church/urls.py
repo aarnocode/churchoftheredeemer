@@ -22,5 +22,7 @@ urlpatterns = [
     path('about/',views.about,name='about'),
     path('pastoraCorner/',views.pastora_corner,name='pastora_corner'),
     path('pastoraCorner/list',views.sermon_list,name='sermon_list'),
-    path('pastoraCorner/list/(?P<urlId>\d+)',views.sermon_list_prev,name='sermon_list_prev')
+    path('pastoraCorner/list/(?P<urlId>\d+)',views.sermon_list_prev,name='sermon_list_prev'),
+    path('app/',views.SPA,name='SPA'),
+    path('mapp/',views.mobileSPA,name='mobileSPA'),
 ]

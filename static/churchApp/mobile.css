@@ -1,0 +1,44 @@
+body{
+  font-size:1.250em !important;
+  background-image: linear-gradient(to bottom, #ffcf75, #fff8eb,white,white,white);
+  background-repeat: no-repeat;
+}
+
+.navbar{
+  background-color: #283c63 !important;
+  font-size:1.500em !important;
+}
+
+.navbar-toggler-icon{
+  padding: 30px !important;
+}
+
+.navbar-heading {
+  width:534px;
+  height:100px;
+}
+
+.schedulebanner{
+  width:90%;
+}
+
+.verseoftheday{
+  font-size:3vw;
+  font-family:'Playfair Display', serif;
+  margin-left:10%;
+  margin-right:10%;
+  margin-top:5%;
+}
+
+.mivision{
+  background-color:rgba(248, 95, 115, 0.8);
+  font-size:1.250em;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .3s !important;
+}
+
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0 !important;
+}
