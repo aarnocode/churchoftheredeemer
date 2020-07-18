@@ -150,7 +150,45 @@
             </div>
           </transition>
 
+          <div id='commentSection' class="col-md-8 card mb-4  mt-3 " v-if='feedPastorCorner'>
+            <div class="card-body">
+              <!-- comments -->
+              <h2>[[ comments.length ]] comments</h2>
+
+              <!-- {% for comment in comments %} -->
+                <div  v-for="entry in comments" class="comments" style="padding: 10px;white-space:pre-line">
+                  <p class="" style='font-weight:Bold;font-size:1.250em'>
+                    [[ entry.name ]]
+                    <span class="" style='font-size:0.5em'>
+                      [[ entry.created_on ]]
+                    </span>
+                  </p>
+                  [[ entry.body]]
+                </div>
+                <!-- {% endfor %} -->
+              </div>
+          </div>
+          <div class="col-md-8 card mb-4  mt-3 ">
+            <div class="card-body">
+              {% if new_comment %}
+              <div class="alert alert-success" role="alert">
+                Your comment is awaiting moderation
+              </div>
+              {% else %}
+              <h3>Leave a comment</h3>
+              <form method="post" style="margin-top: 1.3em;">
+                {{ comment_form.as_p }}
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary  btn-lg">Submit</button>
+              </form>
+              {% endif %}
+            </div>
+          </div>
+
         </div>
+
+      <!-- COMMENTS COMMENTS COMMENTS COMMENTS -->
+
       </transition>
       <!-- ////////////////////////////////////////////// -->
 
@@ -214,9 +252,12 @@
           sermons:[],
           currentSermon:[],
           sermonId:0,
+          comments:[],
+          newComment:{},
         },
         mounted:function(){
           this.getSermons();
+          this.getComments();
         },
         methods:{
           homeClick:function(){
@@ -273,6 +314,7 @@
               .then((response)=>{
                 this.currentSermon=response.data;
                 this.loading=false;
+                console.log('success')
               })
               .catch((err)=>{
                 this.loading=false;
@@ -284,6 +326,30 @@
             this.feedLatestSermon=true;
             this.feedPreviousSermon=false;
             this.feedAbout=false;
+          },
+          getComments:function(){
+            this.loading=true;
+            this.$http.get('/api/comments/')
+              .then((response)=>{
+                this.comments=response.data;
+                this.loading=false;
+              })
+              .catch((err)=>{
+                this.loading=false;
+                console.log(err);
+              })
+          },
+          addComment:function(){
+            this.loading=true;
+            this.$http.post('/api/comments/',this.newComment)
+            .then((response)=>{
+              this.loadinh=false;
+              this.getArticles();
+            })
+            .catch((err)=>{
+              this.loading=false;
+              console.log(err);
+            })
           }
         }
       })

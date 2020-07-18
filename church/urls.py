@@ -26,5 +26,5 @@ urlpatterns = [
     path('pastoraCorner/list/(?P<urlId>\d+)',views.sermon_list_prev,name='sermon_list_prev'),
     path('app/',views.SPA,name='SPA'),
     path('mapp/',views.mobileSPA,name='mobileSPA'),
-    path('api/',include(router.urls))
+    path('api/',include(router.urls)),
 ]

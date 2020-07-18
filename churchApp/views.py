@@ -1,5 +1,7 @@
 from django.shortcuts import render
-from churchApp.models import DevotionalVerse,VerseOfTheDay,Sermon,Announcement
+from churchApp.models import DevotionalVerse,VerseOfTheDay,Sermon,Announcement,Comment
+from .forms import CommentForm
+from django.shortcuts import render, get_object_or_404
 import django_user_agents
 #import ntplib
 from datetime import date
@@ -157,6 +159,27 @@ def mobileSPA(request):
     sermoncount=Sermon.objects.all().count()
     index_dict['count']=sermoncount
     index_dict['sermonList']=Sermon.objects.all().order_by('-date')
+
+    # COMMENT's
+    template_name='mobile.html'
+    sermon=get_object_or_404(Sermon)
+    comments=sermon.comments.filter(active=True)
+    new_comment=None
+
+    if request.method == 'POST':
+        comment_form=CommentForm(data=request.POST)
+        if comment_form.is_valid():
+
+            new_comment=comment_form.save(commit=False)
+            new_comment.sermon=sermon
+            new_comment.save()
+    else:
+        comment_form=CommentForm()
+    index_dict['sermonPost']=sermon
+    index_dict['comments']=comments
+    index_dict['new_comment']=new_comment
+    index_dict['comment_form']=comment_form
+
 
     # ABOUT
     about='<strong>Something about the church here</strong> Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
