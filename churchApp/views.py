@@ -163,7 +163,7 @@ def mobileSPA(request):
     # COMMENT's
     template_name='mobile.html'
     sermon=get_object_or_404(Sermon)
-    comments=sermon.comments.filter(active=True)
+    comments=sermon.comments.filter(active=False)
     new_comment=None
 
     if request.method == 'POST':
@@ -173,6 +173,7 @@ def mobileSPA(request):
             new_comment=comment_form.save(commit=False)
             new_comment.sermon=sermon
             new_comment.save()
+            comment_form=CommentForm()
     else:
         comment_form=CommentForm()
     index_dict['sermonPost']=sermon

@@ -35,6 +35,7 @@ class Comment(models.Model):
     email = models.EmailField()
     body = models.TextField()
     created_on = models.DateTimeField(auto_now_add=True)
+    reply_id=models.IntegerField(blank=True, null=True)
     active=models.BooleanField(default=False)
 
     class Meta:

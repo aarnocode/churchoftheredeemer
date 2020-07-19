@@ -8,6 +8,12 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+    <!-- JQUERY FORM AJAX -->
+    <script>
+      if ( window.history.replaceState ) {
+          window.history.replaceState( null, null, window.location.href );
+      }
+  </script>
     <title></title>
   </head>
   <body>
@@ -37,6 +43,9 @@
       <!-- ////////////////////////////////////////////// -->
 
       <!-- ////////////////////HOME////////////////////// -->
+        <template v-if='formSubmit'>
+          [[ pastorCornerClick() ]]
+        </template>
         <transition name="fade" :duration='{enter:5000, leave:0}'>
           <div id='home' v-if="feedHome">
             <div class="container">
@@ -114,6 +123,7 @@
               <h3 style='font-family:Playfair Display, serif;margin-left:5%'>
                 <!-- {{date}} -->
                 [[ sermons[sermonId].date ]]
+                [[ sermons[sermonId].id ]]
 
               </h3>
               <div class="container" style='font-size:1.250em'>
@@ -150,25 +160,32 @@
             </div>
           </transition>
 
-          <div id='commentSection' class="col-md-8 card mb-4  mt-3 " v-if='feedPastorCorner'>
+          <div id='comments' class="col-md-8 card mb-4  mt-3 " v-if='feedComments'>
             <div class="card-body">
               <!-- comments -->
               <h2>[[ comments.length ]] comments</h2>
-
-              <!-- {% for comment in comments %} -->
-                <div  v-for="entry in comments" class="comments" style="padding: 10px;white-space:pre-line">
-                  <p class="" style='font-weight:Bold;font-size:1.250em'>
-                    [[ entry.name ]]
-                    <span class="" style='font-size:0.5em'>
-                      [[ entry.created_on ]]
-                    </span>
+              <template v-for='comment in comments'>
+                <p v-if='comment.reply_id==null' class="" style='font-size:1.250em'>
+                  <strong>[[comment.name]]</strong>
+                  <span class="" style='font-size:0.7em'>
+                    [[comment.created_on]]
+                  </span><br>
+                  <span>[[comment.body]]</span>
+                </p>
+                <template v-for='reply in comments'>
+                  <p v-if='reply.reply_id == comment.id' class="" style='font-size:1.250em;padding-left:30%'>
+                    <strong>[[reply.name]]</strong>
+                    <span class="" style='font-size:0.7em'>
+                      [[reply.created_on]]
+                    </span><br>
+                    <span>[[reply.body]]</span>
                   </p>
-                  [[ entry.body]]
-                </div>
-                <!-- {% endfor %} -->
-              </div>
+                </template>
+              </template>
+            </div>
+
           </div>
-          <div class="col-md-8 card mb-4  mt-3 ">
+          <!-- <div class="col-md-8 card mb-4  mt-3 ">
             <div class="card-body">
               {% if new_comment %}
               <div class="alert alert-success" role="alert">
@@ -176,12 +193,38 @@
               </div>
               {% else %}
               <h3>Leave a comment</h3>
-              <form method="post" style="margin-top: 1.3em;">
+              <form id='commentForm' method="post" style="margin-top: 1.3em;">
                 {{ comment_form.as_p }}
                 {% csrf_token %}
-                <button type="submit" class="btn btn-primary  btn-lg">Submit</button>
+                <button @click='commentSubmit' type="submit" class="btn btn-primary  btn-lg">Submit</button>
               </form>
               {% endif %}
+            </div>
+          </div> -->
+
+          <div class="col-md-8 card mb-4  mt-3 ">
+            <div class="card-body">
+
+
+              <div class="alert alert-success" role="alert">
+                Your comment is awaiting moderation
+              </div>
+
+              <h3>Leave a comment</h3>
+              <!-- <form id='commentForm'  style="margin-top: 1.3em;">
+                {{ comment_form.as_p }}
+                {% csrf_token %}
+
+                <button @click='commentSubmit' class="btn btn-primary  btn-lg">Submit</button>
+              </form> -->
+
+              <input v-model='newComment.name' type=textarea placeholder='Input your name'>
+              <input v-model='newComment.email' type="email" placeholder="Input your email address">
+              <input v-model='newComment.body' type=textarea placeholder='Your comment here'>
+
+
+              <button @click='addComment' type="button" name="button">SUBMIT</button>
+              {% csrf_token %}
             </div>
           </div>
 
@@ -238,6 +281,7 @@
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.1"></script>
     <script>
+
       var app=new Vue({
         el:'#mobileApp',
         delimiters:['[[',']]'],
@@ -247,17 +291,26 @@
           feedAbout:false,
           feedLatestSermon:false,
           feedPreviousSermon:false,
+          feedComments:false,
           message:'message check',
           loading:false,
+          formSubmit:false,
+          usrName:null,
+          usrEmail:null,
+          usrComment:null,
           sermons:[],
           currentSermon:[],
           sermonId:0,
           comments:[],
-          newComment:{},
+          newComment:{'sermon':null,'name':null, 'email':null, 'body':null},
         },
         mounted:function(){
           this.getSermons();
-          this.getComments();
+          if (this.formSubmit){
+            this.pastorCornerClick();
+          }
+
+
         },
         methods:{
           homeClick:function(){
@@ -265,6 +318,7 @@
             this.feedPastorCorner=false;
             this.feedLatestSermon=true;
             this.feedPreviousSermon=false;
+            this.feedComments=false;
             this.feedAbout=false;
           },
           pastorCornerClick:function(){
@@ -272,14 +326,18 @@
             this.feedPastorCorner=true;
             this.feedLatestSermon=true;
             this.feedPreviousSermon=false;
+            this.feedComments=true;
             this.feedAbout=false;
             this.sermonId=0;
+            this.getComments();
+            console.log('pastor clicked')
           },
           previousSermonClick:function(){
             this.feedHome=false;
             this.feedPastorCorner=true;
             this.feedLatestSermon=false;
             this.feedPreviousSermon=true;
+            this.feedComments=false;
             this.feedAbout=false;
           },
           aboutClick:function(){
@@ -287,6 +345,7 @@
             this.feedPastorCorner=false;
             this.feedLatestSermon=true;
             this.feedPreviousSermon=false;
+            this.feedComments=false;
             this.feedAbout=true;
             this.message='about clicked'
           },
@@ -296,7 +355,7 @@
               .then((response)=>{
                 this.sermons=response.data.reverse();
                 this.loading=false;
-                this.sermonId=sermons.length-1;
+                this.sermonId=sermons.length;
                 console.log(sermons.length-1)
                 console.log('success')
               })
@@ -324,6 +383,7 @@
             this.feedHome=false;
             this.feedPastorCorner=true;
             this.feedLatestSermon=true;
+            this.feedComments=true;
             this.feedPreviousSermon=false;
             this.feedAbout=false;
           },
@@ -331,7 +391,7 @@
             this.loading=true;
             this.$http.get('/api/comments/')
               .then((response)=>{
-                this.comments=response.data;
+                this.comments=response.data.filter(status=>status.active==true);
                 this.loading=false;
               })
               .catch((err)=>{
@@ -341,15 +401,21 @@
           },
           addComment:function(){
             this.loading=true;
+            this.newComment.sermon=this.sermons[this.sermonId].id;
+            console.log(this.newComment.sermon)
             this.$http.post('/api/comments/',this.newComment)
             .then((response)=>{
-              this.loadinh=false;
-              this.getArticles();
+              this.loading=false;
+              this.getComments();
             })
             .catch((err)=>{
               this.loading=false;
               console.log(err);
             })
+          },
+          commentSubmit:function(){
+            // this.formSubmit=true;
+            this.message=this.usrName;
           }
         }
       })
