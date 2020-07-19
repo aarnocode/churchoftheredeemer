@@ -166,20 +166,20 @@ def mobileSPA(request):
     comments=sermon.comments.filter(active=False)
     new_comment=None
 
-    if request.method == 'POST':
-        comment_form=CommentForm(data=request.POST)
-        if comment_form.is_valid():
-
-            new_comment=comment_form.save(commit=False)
-            new_comment.sermon=sermon
-            new_comment.save()
-            comment_form=CommentForm()
-    else:
-        comment_form=CommentForm()
+    # if request.method == 'POST':
+    #     comment_form=CommentForm(data=request.POST)
+    #     if comment_form.is_valid():
+    #
+    #         new_comment=comment_form.save(commit=False)
+    #         new_comment.sermon=sermon
+    #         new_comment.save()
+    #         comment_form=CommentForm()
+    # else:
+    #     comment_form=CommentForm()
     index_dict['sermonPost']=sermon
     index_dict['comments']=comments
     index_dict['new_comment']=new_comment
-    index_dict['comment_form']=comment_form
+    # index_dict['comment_form']=comment_form
 
 
     # ABOUT

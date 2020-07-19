@@ -160,7 +160,8 @@
             </div>
           </transition>
 
-          <div id='comments' class="col-md-8 card mb-4  mt-3 " v-if='feedComments'>
+
+          <div id='comments' class="col-12 card mb-4  mt-3" v-if='feedComments'>
             <div class="card-body">
               <!-- comments -->
               <h2>[[ comments.length ]] comments</h2>
@@ -202,12 +203,12 @@
             </div>
           </div> -->
 
-          <div class="col-md-8 card mb-4  mt-3 ">
+          <div class="col-12 card mb-4  mt-3 ">
             <div class="card-body">
 
 
               <div class="alert alert-success" role="alert">
-                Your comment is awaiting moderation
+                Your comment is awaiting moderation thus may or may not be visible right now.
               </div>
 
               <h3>Leave a comment</h3>
@@ -217,14 +218,21 @@
 
                 <button @click='commentSubmit' class="btn btn-primary  btn-lg">Submit</button>
               </form> -->
+              <h4>Name:</h4>
+              <input v-model='newComment.name' type=textarea style="margin-left:10%">
+              <h4>Email:
+              </h4>
+              <input v-model='newComment.email' type="email" style="margin-left:10%">
+              <h4>Comment:</h4>
+              <input v-model='newComment.body' type=textarea style='width:500px;height:200px;margin-left:10%'>
 
-              <input v-model='newComment.name' type=textarea placeholder='Input your name'>
-              <input v-model='newComment.email' type="email" placeholder="Input your email address">
-              <input v-model='newComment.body' type=textarea placeholder='Your comment here'>
 
+              <br>
+              <button @click='addComment' class='btn btn-primary mt-3' type="button" name="button" style="margin-left:10%">
+                SUBMIT
+                {% csrf_token %}
+              </button>
 
-              <button @click='addComment' type="button" name="button">SUBMIT</button>
-              {% csrf_token %}
             </div>
           </div>
 
@@ -403,10 +411,12 @@
             this.loading=true;
             this.newComment.sermon=this.sermons[this.sermonId].id;
             console.log(this.newComment.sermon)
-            this.$http.post('/api/comments/',this.newComment)
+            this.$http.post('/api/comments/',this.newComment,{headers: {"X-CSRFToken":csrftoken}})
             .then((response)=>{
               this.loading=false;
               this.getComments();
+              alert('Thank you for leaving a comment!\nPlease wait for our moderator to validate your comment.')
+              this.newComment={};
             })
             .catch((err)=>{
               this.loading=false;
@@ -419,6 +429,25 @@
           }
         }
       })
+
+      const interval=setInterval(function(){
+        if (app.feedPastorCorner){
+          app.getComments();
+        }
+      },5000);
+
+      function readCookie(name) {
+          var nameEQ = name + "=";
+          var ca = document.cookie.split(';');
+          for(var i=0;i < ca.length;i++) {
+              var c = ca[i];
+              while (c.charAt(0)==' ') c = c.substring(1,c.length);
+              if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+          }
+          return null;
+      }
+
+      var csrftoken=readCookie('csrftoken');
     </script>
 
     <!-- SCRIPT CLOSING WHEN CLICKED OUTSIDE -->
