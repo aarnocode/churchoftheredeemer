@@ -32,8 +32,8 @@ body{
 }
 
 .mivision{
-  background-color:rgba(248, 95, 115, 0.8);
-  font-size:1.250em;
+  background-color: rgba(248, 95, 115, 0.5) !important;
+  font-size:1.125em;
 }
 
 .fade-enter-active, .fade-leave-active {
